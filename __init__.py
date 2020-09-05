@@ -1,6 +1,8 @@
-from flask import Flask, redirect
+from flask import Flask, redirect, jsonify
 
 import random
+import pandas
+import json
 
 app = Flask(__name__)
 
@@ -24,6 +26,27 @@ DOCUMENTATION WEBPAGE BELOW
 
 """
 
+parsed_json = None
+
+def parse_employees():
+    global parsed_json
+    parsed_json = {}
+    employees = []
+    df = pandas.read_csv("data.csv", index_col="id")
+    for ind, row in df.iterrows():
+        employee = {}
+        employee["name"] = row["first_name"] + " " + row["last_name"]
+        employee["time_zone"] = row["time_zone"]
+        employee["dept"] = row["dept"]
+        employees.append(employee);
+    parsed_json["employees"] = employees
+
+@app.route("/api/fetch")
+def api_fetch():
+    global parsed_json
+    if parsed_json is None:
+        parse_employees()
+    return jsonify(parsed_json)
 
 @app.route("/")
 def redirect_to_api():
