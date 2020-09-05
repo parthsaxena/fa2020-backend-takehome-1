@@ -2,7 +2,6 @@ from flask import Flask, redirect, jsonify
 
 import random
 import pandas
-import json
 
 app = Flask(__name__)
 
